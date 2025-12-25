@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Build a Robot Face! (Nano Banana Edition)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sniglet:wght@400;800&family=Baloo+2:wght@500;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --blue: #8ecae6;
+            --blue-dark: #219ebc;
+            --pink: #ffb703;
+            /* Swapping to a more vibrant palette */
+            --yellow: #fb8500;
+            --green: #06d6a0;
+            --purple: #6a4c93;
+            --bg-color: #fdfcfb;
+            --clay-shadow: 12px 12px 24px rgba(0, 0, 0, 0.08),
+                inset -8px -8px 16px rgba(0, 0, 0, 0.05),
+                inset 8px 8px 16px rgba(255, 255, 255, 1);
+            --card-radius: 40px;
+            --transition-bounce: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image:
+                radial-gradient(var(--blue) 1px, transparent 1px),
+                radial-gradient(var(--blue) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            font-family: 'Baloo 2', cursive;
+            color: #2b2d42;
+            overflow-x: hidden;
+            line-height: 1.4;
+        }
+
+        /* --- Custom Scrollbar --- */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--blue);
+            border-radius: 10px;
+        }
+
+        /* --- Header & Nav --- */
+        header {
+            text-align: center;
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Sniglet', cursive;
+            font-size: clamp(2rem, 10vw, 4rem);
+            color: var(--purple);
+            line-height: 1.1;
+            margin-bottom: 0.5rem;
+            filter: drop-shadow(4px 4px 0px rgba(255, 255, 255, 1));
+        }
+
+        .subtitle {
+            background: var(--yellow);
+            color: white;
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            box-shadow: var(--clay-shadow);
+            transform: rotate(-1deg);
+            border: 4px solid #fff;
+        }
+
+        nav {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-item {
+            width: 54px;
+            height: 54px;
+            background: #fff;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--clay-shadow);
+            cursor: pointer;
+            transition: var(--transition-bounce);
+            border: 2px solid #fff;
+        }
+
+        .nav-item:hover {
+            transform: scale(1.1) rotate(5deg);
+            border-color: var(--blue);
+        }
+
+        .nav-item svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+            min-height: 450px;
+        }
+
+        .robot-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 1/1;
+            filter: drop-shadow(20px 20px 40px rgba(0, 0, 0, 0.15));
+            transition: var(--transition-bounce);
+        }
+
+        #hero-robot-svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .floating-banana {
+            position: absolute;
+            width: 10%;
+            max-width: 40px;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* --- Workshop Grid --- */
+        .workshop {
+            max-width: 1200px;
+            margin: 2rem auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            padding: 0 1.5rem;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: var(--card-radius);
+            padding: 2rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            box-shadow: var(--clay-shadow);
+            transition: var(--transition-bounce);
+            border: 4px solid #fff;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+        }
+
+        .card h2 {
+            color: var(--purple);
+            font-family: 'Sniglet';
+            font-size: 1.6rem;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .clay-btn {
+            border: 2px solid transparent;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-family: 'Baloo 2';
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            background: #fff;
+            color: var(--purple);
+            box-shadow: var(--clay-shadow);
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .clay-btn:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+        }
+
+        .clay-btn:active {
+            transform: scale(0.95);
+        }
+
+        .clay-btn.active {
+            background: var(--blue);
+            color: white;
+            border-color: #fff;
+        }
+
+        .clay-btn.primary {
+            background: var(--blue);
+            color: #fff;
+        }
+
+        .clay-btn.secondary {
+            background: var(--yellow);
+            color: #fff;
+        }
+
+        .clay-btn.success {
+            background: var(--green);
+            color: #fff;
+        }
+
+        /* --- Snapshot Gallery --- */
+        .gallery-section {
+            padding: 4rem 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .gallery-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .gallery-grid {
+            display: flex;
+            gap: 1.5rem;
+            overflow-x: auto;
+            padding: 1rem 0.5rem 2rem;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+        }
+
+        .gallery-grid::-webkit-scrollbar {
+            display: none;
+        }
+
+        .snapshot-card {
+            min-width: 150px;
+            width: 150px;
+            aspect-ratio: 1/1;
+            background: #fff;
+            border-radius: 25px;
+            padding: 10px;
+            box-shadow: var(--clay-shadow);
+            scroll-snap-align: start;
+            border: 3px solid #fff;
+        }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--green);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 100px;
+            font-size: 1.5rem;
+            font-family: 'Sniglet';
+            box-shadow: var(--clay-shadow);
+            border: 4px solid #fff;
+        }
+
+        /* --- Animations --- */
+        @keyframes orbit {
+            from {
+                transform: rotate(0deg) translateX(min(160px, 40vw)) rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg) translateX(min(160px, 40vw)) rotate(-360deg);
+            }
+        }
+
+        .eye-blink {
+            animation: blink 4s infinite;
+            transform-origin: center;
+        }
+
+        @keyframes blink {
+
+            0%,
+            90%,
+            100% {
+                transform: scaleY(1);
+            }
+
+            95% {
+                transform: scaleY(0.1);
+            }
+        }
+
+        .gear-spin {
+            animation: spin 10s infinite linear;
+            transform-origin: center;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 600px) {
+            .workshop {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                min-height: 350px;
+            }
+
+            .clay-btn {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="nav-item" style="position: absolute; left: 20px; top: 20px;" onclick="toggleMenu()">
+            <svg viewBox="0 0 100 100">
+                <path d="M20 50 L80 50 M20 30 L80 30 M20 70 L80 70" stroke="var(--blue-dark)" stroke-width="8"
+                    stroke-linecap="round" />
+            </svg>
+        </div>
+        <h1>Robot Builder <span style="color:var(--yellow)">Pro</span></h1>
+        <div class="subtitle">AI-Powered Banana Energy</div>
+
+        <nav>
+            <div class="nav-item" title="Shape" onclick="scrollToWorkshop(0)">
+                <svg viewBox="0 0 100 100">
+                    <rect x="25" y="25" width="50" height="50" rx="10" fill="var(--blue)" />
+                </svg>
+            </div>
+            <div class="nav-item" title="Mood" onclick="scrollToWorkshop(1)">
+                <svg viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="25" fill="var(--pink)" />
+                </svg>
+            </div>
+            <div class="nav-item" title="Colors" onclick="scrollToWorkshop(2)">
+                <svg viewBox="0 0 100 100">
+                    <path d="M50 20 L80 80 L20 80 Z" fill="var(--green)" />
+                </svg>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="robot-container" id="capture-area">
+            <!-- Banana Electrons -->
+            <div class="floating-banana" style="top: 10%; left: 10%; animation: orbit 6s infinite linear;">
+                <svg viewBox="0 0 100 100">
+                    <path d="M20 40 Q40 30 80 70 Q50 90 20 40" fill="var(--yellow)" />
+                </svg>
+            </div>
+            <div class="floating-banana" style="top: 10%; right: 10%; animation: orbit 6s infinite linear -2s;">
+                <svg viewBox="0 0 100 100">
+                    <path d="M20 40 Q40 30 80 70 Q50 90 20 40" fill="var(--yellow)" />
+                </svg>
+            </div>
+
+            <!-- The Hero Robot SVG -->
+            <svg id="hero-robot-svg" viewBox="0 0 400 400">
+                <defs>
+                    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur in="SourceAlpha" stdDeviation="5" />
+                        <feOffset dx="2" dy="5" result="offsetblur" />
+                        <feComponentTransfer>
+                            <feFuncA type="linear" slope="0.2" />
+                        </feComponentTransfer>
+                        <feMerge>
+                            <feMergeNode />
+                            <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Accessories Layer (Back) -->
+                <g id="acc-back"></g>
+
+                <!-- Head Frame -->
+                <rect id="robot-head" x="50" y="50" width="300" height="300" rx="60" fill="var(--blue)" stroke="#fff"
+                    stroke-width="12" style="transition: var(--transition-bounce)" />
+                <rect x="70" y="70" width="260" height="260" rx="40" fill="rgba(255,255,255,0.2)" />
+
+                <!-- Gears -->
+                <g class="gear-spin" style="transform: translate(320px, 80px)">
+                    <path
+                        d="M-20 -5 L-20 5 L-30 10 L-25 20 L-15 15 L-5 25 L5 25 L15 15 L25 20 L30 10 L20 5 L20 -5 L30 -10 L25 -20 L15 -15 L5 -25 L-5 -25 L-15 -15 L-25 -20 L-30 -10 Z"
+                        fill="#fff" opacity="0.3" />
+                </g>
+
+                <!-- Eyes -->
+                <g id="robot-eyes-group">
+                    <g class="eye-container" id="eye-l" transform="translate(130, 180)">
+                        <circle class="eye-blink" cx="0" cy="0" r="35" fill="#fff" />
+                        <circle class="pupil" cx="0" cy="0" r="15" fill="#2b2d42" />
+                    </g>
+                    <g class="eye-container" id="eye-r" transform="translate(270, 180)">
+                        <circle class="eye-blink" cx="0" cy="0" r="35" fill="#fff" />
+                        <circle class="pupil" cx="0" cy="0" r="15" fill="#2b2d42" />
+                    </g>
+                </g>
+
+                <!-- Mouth -->
+                <path id="robot-mouth" d="M150 280 Q200 310 250 280" stroke="#fff" stroke-width="12"
+                    stroke-linecap="round" fill="none" style="transition: 0.3s" />
+
+                <!-- Accessories Layer (Front) -->
+                <g id="acc-front"></g>
+
+                <!-- Banana Power Core -->
+                <g id="power-core" opacity="0" style="transition: 0.5s">
+                    <circle cx="200" cy="200" r="40" fill="var(--yellow)" filter="url(#shadow)" />
+                    <path d="M190 190 Q200 185 215 205 Q205 215 190 190" fill="#fff" />
+                </g>
+            </svg>
+        </div>
+
+        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+            <button class="clay-btn primary" onclick="captureDesign()">Capture Snapshot</button>
+            <button class="clay-btn secondary" onclick="downloadSVG()">Download SVG</button>
+        </div>
+    </section>
+
+    <div class="workshop">
+        <!-- Card 1: Shape & Form -->
+        <div class="card">
+            <h2>1. Choose Chassis</h2>
+            <div class="btn-group">
+                <button class="clay-btn active" onclick="updateShape('square', this)">Square</button>
+                <button class="clay-btn" onclick="updateShape('round', this)">Round</button>
+            </div>
+            <div class="btn-group">
+                <button class="clay-btn" onclick="toggleAccessory('antennas')">Add Antennas</button>
+                <button class="clay-btn" onclick="toggleAccessory('bow')">Add Bow-tie</button>
+            </div>
+        </div>
+
+        <!-- Card 2: Persona -->
+        <div class="card">
+            <h2>2. Set Persona</h2>
+            <div class="btn-group">
+                <button class="clay-btn active" onclick="updateMood('happy', this)">Happy</button>
+                <button class="clay-btn" onclick="updateMood('cool', this)">Cool</button>
+                <button class="clay-btn" onclick="updateMood('surprised', this)">Wink</button>
+            </div>
+            <p id="persona-text" style="font-size: 0.9rem; color: #666;">Current vibe: Friendly & Ready!</p>
+        </div>
+
+        <!-- Card 3: Color Palette -->
+        <div class="card">
+            <h2>3. Custom Paint</h2>
+            <div class="btn-group">
+                <button class="clay-btn" style="background: var(--blue)" onclick="updateColor('var(--blue)')"></button>
+                <button class="clay-btn" style="background: var(--pink)" onclick="updateColor('var(--pink)')"></button>
+                <button class="clay-btn" style="background: var(--green)"
+                    onclick="updateColor('var(--green)')"></button>
+                <button class="clay-btn" style="background: var(--purple)"
+                    onclick="updateColor('var(--purple)')"></button>
+            </div>
+            <div id="battery-container"
+                style="margin-top: 1rem; width: 100%; height: 40px; border: 4px solid #eee; border-radius: 20px; position: relative; overflow: hidden;">
+                <div id="battery-fill" style="width: 20%; height: 100%; background: var(--green); transition: 1s;">
+                </div>
+            </div>
+            <button class="clay-btn success" style="width: 100%" onclick="powerUp()">INJECT BANANA POWER</button>
+        </div>
+    </div>
+
+    <section class="gallery-section">
+        <div class="gallery-header">
+            <h2 style="font-family: 'Sniglet'; font-size: 2rem; color: var(--purple);">Your Design Gallery</h2>
+            <p>Snapshots of your best robot faces</p>
+        </div>
+        <div class="gallery-grid" id="snapshot-gallery">
+            <!-- Snapshots will appear here -->
+            <div class="snapshot-card"
+                style="display: flex; align-items: center; justify-content: center; border-style: dashed; color: #ccc;">
+                Empty Slot
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="badge">
+            <svg width="30" height="30" viewBox="0 0 100 100">
+                <path d="M20 40 Q40 30 80 70 Q50 90 20 40" fill="#fff" />
+            </svg>
+            DESIGNER MODE ENABLED
+            <svg width="30" height="30" viewBox="0 0 100 100">
+                <path d="M20 40 Q40 30 80 70 Q50 90 20 40" fill="#fff" />
+            </svg>
+        </div>
+        <p style="margin-top: 2rem; font-weight: 800; color: var(--purple); opacity: 0.6;">&copy; 2025 Technoplus
+            Creative Labs</p>
+    </footer>
+
+    <script>
+        const state = {
+            shape: 'square',
+            mood: 'happy',
+            color: 'var(--blue)',
+            accessories: new Set(),
+            charge: 20
+        };
+
+        // --- Interaction Logic ---
+        function updateShape(type, btn) {
+            state.shape = type;
+            const head = document.getElementById('robot-head');
+            head.setAttribute('rx', type === 'square' ? '40' : '150');
+            updateActiveBtn(btn);
+            updatePersona();
+        }
+
+        function updateMood(mood, btn) {
+            state.mood = mood;
+            const mouth = document.getElementById('robot-mouth');
+            const eyes = document.querySelectorAll('.eye-blink');
+
+            if (mood === 'happy') {
+                mouth.setAttribute('d', 'M150 280 Q200 310 250 280');
+                eyes.forEach(e => e.setAttribute('r', '35'));
+            } else if (mood === 'cool') {
+                mouth.setAttribute('d', 'M150 290 L250 290');
+                eyes.forEach(e => e.setAttribute('r', '35'));
+            } else if (mood === 'surprised') {
+                mouth.setAttribute('d', 'M180 290 Q200 320 220 290');
+                document.getElementById('eye-r').querySelector('.eye-blink').setAttribute('r', '5');
+            }
+            updateActiveBtn(btn);
+            updatePersona();
+        }
+
+        function updateColor(color) {
+            state.color = color;
+            document.getElementById('robot-head').style.fill = color;
+            updatePersona();
+        }
+
+        function toggleAccessory(acc) {
+            const front = document.getElementById('acc-front');
+            const back = document.getElementById('acc-back');
+
+            if (state.accessories.has(acc)) {
+                state.accessories.delete(acc);
+                document.getElementById(`acc-${acc}`)?.remove();
+            } else {
+                state.accessories.add(acc);
+                if (acc === 'antennas') {
+                    back.innerHTML += `<g id="acc-antennas">
+                        <line x1="120" y1="60" x2="100" y2="10" stroke="#fff" stroke-width="8" />
+                        <circle cx="100" cy="10" r="10" fill="var(--pink)" />
+                        <line x1="280" y1="60" x2="300" y2="10" stroke="#fff" stroke-width="8" />
+                        <circle cx="300" cy="10" r="10" fill="var(--pink)" />
+                    </g>`;
+                } else if (acc === 'bow') {
+                    front.innerHTML += `<g id="acc-bow" transform="translate(200, 340)">
+                        <path d="M-40 -20 L40 20 L40 -20 L-40 20 Z" fill="var(--pink)" />
+                        <circle cx="0" cy="0" r="10" fill="#fff" />
+                    </g>`;
+                }
+            }
+        }
+
+        function updateActiveBtn(btn) {
+            if (!btn) return;
+            const group = btn.parentElement;
+            group.querySelectorAll('.clay-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function updatePersona() {
+            const text = document.getElementById('persona-text');
+            const moods = {
+                happy: 'Friendly & Ready!',
+                cool: 'Too chill for components.',
+                surprised: 'Did someone say battery?'
+            };
+            text.innerText = `Current vibe: ${moods[state.mood]} (${state.shape} edition)`;
+        }
+
+        // --- Eye Tracking ---
+        document.addEventListener('mousemove', (e) => {
+            const robot = document.getElementById('hero-robot-svg');
+            const rect = robot.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            const pupils = document.querySelectorAll('.pupil');
+            const limit = 12;
+
+            pupils.forEach(p => {
+                const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+                const dx = Math.cos(angle) * limit;
+                const dy = Math.sin(angle) * limit;
+                p.style.transform = `translate(${dx}px, ${dy}px)`;
+            });
+        });
+
+        // --- Battery & Power ---
+        function powerUp() {
+            state.charge += 20;
+            if (state.charge > 100) state.charge = 100;
+            document.getElementById('battery-fill').style.width = state.charge + '%';
+
+            if (state.charge === 100) {
+                document.getElementById('power-core').style.opacity = '1';
+                createBananaRain();
+            }
+        }
+
+        // --- Capture & Download ---
+        function captureDesign() {
+            const gallery = document.getElementById('snapshot-gallery');
+            const svg = document.getElementById('hero-robot-svg').cloneNode(true);
+
+            // Cleanup for thumbnail
+            svg.setAttribute('width', '100%');
+            svg.setAttribute('height', '100%');
+
+            const card = document.createElement('div');
+            card.className = 'snapshot-card';
+            card.appendChild(svg);
+
+            // Add to start of gallery
+            if (gallery.children[0].textContent.includes('Empty')) {
+                gallery.innerHTML = '';
+            }
+            gallery.prepend(card);
+
+            // Bounce effect
+            card.style.animation = 'pulse 0.5s ease';
+        }
+
+        function downloadSVG() {
+            const svgData = document.getElementById('hero-robot-svg').outerHTML;
+            const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(svgBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `my_robot_${Date.now()}.svg`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function createBananaRain() {
+            for (let i = 0; i < 20; i++) {
+                const b = document.createElement('div');
+                b.innerHTML = `<svg viewBox="0 0 100 100" width="30"><path d="M20 40 Q40 30 80 70 Q50 90 20 40" fill="var(--yellow)"/></svg>`;
+                b.style.position = 'fixed';
+                b.style.left = Math.random() * 100 + 'vw';
+                b.style.top = '-50px';
+                b.style.zIndex = '1000';
+                b.style.pointerEvents = 'none';
+                document.body.appendChild(b);
+
+                b.animate([
+                    { transform: `translateY(0) rotate(0deg)`, opacity: 1 },
+                    { transform: `translateY(110vh) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+                ], {
+                    duration: 2000 + Math.random() * 2000,
+                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                }).onfinish = () => b.remove();
+            }
+        }
+
+        function scrollToWorkshop(index) {
+            const cards = document.querySelectorAll('.card');
+            cards[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            cards[index].style.borderColor = 'var(--blue)';
+            setTimeout(() => cards[index].style.borderColor = '#fff', 2000);
+        }
+
+        function toggleMenu() {
+            alert("Menu feature coming in Pro version! But hey, look at those bananas!");
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,45 @@
+// This is your Prisma schema file for PostgreSQL
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User designs/snapshots
+model Design {
+  id        String   @id @default(cuid())
+  svgData   String   @db.Text
+  state     Json     // Stores shape, mood, color, accessories, etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([createdAt])
+}
+
+// Tutorial progress tracking
+model TutorialProgress {
+  id        String   @id @default(cuid())
+  userId    String?  // Optional: can be session-based or user-based
+  step      Int
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([userId])
+}
+
+// User feedback and interactions
+model Interaction {
+  id          String   @id @default(cuid())
+  type        String   // 'capture', 'download', 'powerup', etc.
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  
+  @@index([type, createdAt])
+}
+

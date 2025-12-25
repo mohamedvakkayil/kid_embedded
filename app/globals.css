@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Sniglet:wght@400;800&family=Baloo+2:wght@500;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --blue: #8ecae6;
+  --blue-dark: #219ebc;
+  --pink: #ffb703;
+  --yellow: #fb8500;
+  --green: #06d6a0;
+  --purple: #6a4c93;
+  --bg-color: #fdfcfb;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: var(--bg-color);
+  background-image:
+    radial-gradient(var(--blue) 1px, transparent 1px),
+    radial-gradient(var(--blue) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
+  font-family: 'Baloo 2', cursive;
+  color: #2b2d42;
+  overflow-x: hidden;
+  line-height: 1.4;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--blue);
+  border-radius: 10px;
+}
+
+/* Animations */
+@keyframes orbit {
+  from {
+    transform: rotate(0deg) translateX(min(160px, 40vw)) rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg) translateX(min(160px, 40vw)) rotate(-360deg);
+  }
+}
+
+@keyframes blink {
+  0%, 90%, 100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.eye-blink {
+  animation: blink 4s infinite;
+  transform-origin: center;
+}
+
+.gear-spin {
+  animation: spin 10s infinite linear;
+  transform-origin: center;
+}
+
+.orbit-animation {
+  animation: orbit 6s infinite linear;
+}
+
+.orbit-animation-delayed {
+  animation: orbit 6s infinite linear -2s;
+}
+
